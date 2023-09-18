@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../providers/AuthProviders';
 
 const Register = () => {
     const {createUser,user} = useContext(AuthContext);
-    // const user = useContext(AuthContext);
+    const[error,setError] = useState('');
     console.log(user);
     const handleRegister = event => {
         event.preventDefault();
@@ -12,7 +12,17 @@ const Register = () => {
         const name = form.name.value;
         const email = form.email.value;
         const password = form.password.value;
-        console.log(name,email, password);
+        const confirmPassword = form.confirmPassword.value;
+        // console.log(name,email, password);
+        form.reset()
+        if(password.length<6){
+            setError('password must be 6 character');
+            return ;
+        }
+        if(password !== confirmPassword){
+            setError('Your password did not match');
+            return ;
+        }
 
         createUser(email,password)
         .then(result =>{
@@ -22,7 +32,6 @@ const Register = () => {
         .catch(error => {
             console.log(error);
         })
-
     }
     return (
         <div>
@@ -43,16 +52,25 @@ const Register = () => {
                                 <label className="label">
                                     <span className="label-text">Email</span>
                                 </label>
-                                <input type="email" name='email' placeholder="email" className="input input-bordered" />
+                                <input type="email" name='email' placeholder="email" className="input input-bordered" required/>
                             </div>
                             <div className="form-control">
                                 <label className="label">
                                     <span className="label-text">Password</span>
                                 </label>
                                 <input type="text" name='password' placeholder="password" className="input input-bordered" />
+                            </div>
+                            <div className="form-control">
                                 <label className="label">
-                                    <Link to='/login'><p>Allready have an account?</p></Link>
+                                    <span className="label-text">Confirm Password</span>
                                 </label>
+                                <input type="text" name='confirmPassword' placeholder="Confirm password" className="input input-bordered" />
+                            </div>
+                            <div>
+                                <p>{error}</p>
+                            </div>
+                            <div>
+                                <Link to='/login'><p>Already have an account?</p></Link>
                             </div>
                             <div className="form-control mt-6">
                                 <button className="btn btn-primary">Register</button>
@@ -61,7 +79,6 @@ const Register = () => {
                     </div>
                 </div>
             </div>
-
         </div>
     );
 };
